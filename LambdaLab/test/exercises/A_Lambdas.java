@@ -30,9 +30,9 @@ public class A_Lambdas {
      * Write a lambda expression that is a predicate
      * that tests whether a string is longer than four characters.
      */
-    @Test @Ignore
+    @Test
     public void a_predicate1() {
-        Predicate<String> pred = null; // TODO
+        Predicate<String> pred = noChars -> noChars.length() > 4;
 
         assertTrue(pred.test("abcde"));
         assertFalse(pred.test("abcd"));
@@ -42,9 +42,9 @@ public class A_Lambdas {
      * Write a lambda expression that is a predicate
      * that tests whether a string is empty.
      */
-    @Test @Ignore
+    @Test
     public void a_predicate2() {
-        Predicate<String> pred = null; // TODO
+        Predicate<String> pred = noChars -> noChars.isEmpty();
 
         assertTrue(pred.test(""));
         assertFalse(pred.test("a"));
@@ -58,9 +58,9 @@ public class A_Lambdas {
      *
      *     classname::methodname
      */
-    @Test @Ignore
+    @Test
     public void a_predicate3() {
-        Predicate<String> pred = null; // TODO
+        Predicate<String> pred = String::isEmpty;
 
         assertTrue(pred.test(""));
         assertFalse(pred.test("a"));
@@ -77,12 +77,12 @@ public class A_Lambdas {
      * Create a predicate that returns true if both predicates
      * startsWithJ and lengthIs7 hold.
      */
-    @Test @Ignore
+    @Test
     public void a_predicate4() {
         Predicate<String> startsWithJ = s -> s.startsWith("J");
         Predicate<String> lengthIs7 = s -> s.length() == 7;
 
-        Predicate<String> startsWithJAndLengthIs7 = null; // TODO
+        Predicate<String> startsWithJAndLengthIs7 = startsWithJ.and(lengthIs7);
 
         assertFalse(startsWithJAndLengthIs7.test("Hello"));
         assertFalse(startsWithJAndLengthIs7.test("HelloJ1"));
@@ -98,13 +98,14 @@ public class A_Lambdas {
      * Create a predicate that is true if the length of the provided string
      * is 9 or the provided string equals ERROR.
      */
-    @Test @Ignore
+    @Test
     public void a_predicate5() {
+    	
         Predicate<String> lengthIs9 = s -> s.length() == 9;
         Predicate<String> equalsError = "ERROR"::equals;
         // Note: this could also be: Predicate.isEqual("ERROR")
 
-        Predicate<String> lengthIs9orError = null; // TODO
+        Predicate<String> lengthIs9orError = lengthIs9.or(equalsError);
 
         assertFalse(lengthIs9orError.test("Hello"));
         assertTrue(lengthIs9orError.test("Hello J1!"));
@@ -120,20 +121,36 @@ public class A_Lambdas {
      * Write a lambda expression that wraps the given
      * string in parentheses.
      */
-    @Test @Ignore
+    @Test
     public void b_function1() {
-        Function<String, String> func = null; // TODO
-
+    	
+    	StringBuilder sb = new StringBuilder();
+    	
+        Function<String, String> func = stringParen -> {
+        	sb.append("(");
+        	sb.append(stringParen);
+        	sb.append(")");
+        	return sb.toString();
+        };
+        
+        Function<String, String> func2 = stringPar -> String.format("(%s)", stringPar);
+        Function<String, String> func3 = stringPar -> String.format("(" + stringPar + ")", stringPar);
+        Function<String, String> func4 = stringPar -> "(" + stringPar + ")";
+        
         assertEquals("(abc)", func.apply("abc"));
+        assertEquals("(abc)", func2.apply("abc"));
+        assertEquals("(abc)", func3.apply("abc"));
+        assertEquals("(abc)", func4.apply("abc"));
+        
     }
 
     /**
      * Write a lambda expression that converts the
      * given string to upper case.
      */
-    @Test @Ignore
+    @Test
     public void b_function2() {
-        Function<String, String> func = null; // TODO
+        Function<String, String> func = upperCase -> upperCase.toUpperCase();
 
         assertEquals("ABC", func.apply("abc"));
     }
@@ -160,7 +177,7 @@ public class A_Lambdas {
         Function<String, String> unNullify = s -> s == null ? "" : s;
         Function<String, Integer> length = String::length;
 
-        Function<String, Integer> lengthBis = null; // TODO
+        Function<String, Integer> lengthBis = unNullify.andThen(length);
 
         assertEquals((Integer)14, lengthBis.apply("Hello JavaOne!"));
         assertEquals((Integer)0, lengthBis.apply(""));
@@ -177,7 +194,7 @@ public class A_Lambdas {
      */
     @Test @Ignore
     public void c_consumer1() {
-        Consumer<StringBuilder> cons = null; // TODO
+        Consumer<StringBuilder> cons = string -> string.append("abc");
 
         StringBuilder sb = new StringBuilder("xyz");
         cons.accept(sb);
@@ -264,11 +281,15 @@ public class A_Lambdas {
      * of concatenating the first with the second, followed by the
      * first again.
      */
-    @Test @Ignore
+    @Test
     public void e_bifunction1() {
-        BiFunction<String, String, String> bifunc = null; // TODO
-
-        assertEquals("FirstSecondFirst", bifunc.apply("First", "Second"));
+        BiFunction<String, String, String> bifunc = (string1, string2) -> {
+        string2 = string1.concat(string2);
+        string1 = string2.concat(string1);
+        return string1;
+        };
+        
+         assertEquals("FirstSecondFirst", bifunc.apply("First", "Second"));
     }
 
     /**
@@ -276,10 +297,10 @@ public class A_Lambdas {
      * the first occurrence of the second string within the first string,
      * or -1 if the second string doesn't occur within the first string.
      */
-    @Test @Ignore
+    @Test
     public void e_bifunction2() {
-        BiFunction<String, String, Integer> bifunc = null; // TODO
-
+        BiFunction<String, String, Integer> bifunc = (string, string2) -> string.indexOf(string2);
+        
         assertEquals(3, bifunc.apply("abcdefghi", "def").intValue());
         assertEquals(-1, bifunc.apply("abcdefghi", "xyz").intValue());
     }
